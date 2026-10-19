@@ -1,6 +1,6 @@
 {
   "name": "inline-worker-module",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Inline worker entrypoints and their runtime dependencies into an app.",
   "main": "index.js",
   "bin": {

@@ -26,7 +26,7 @@ The command runs with Bare. Replace `hello-pear-worker` with any installed worke
 npm run inline-worker-module
 ```
 
-Run `inline-worker-module --help` to view the command's arguments.
+`inline-worker-module <module> [target]` writes to `workers/main.js` by default. Use `--help` for arguments.
 
 The CLI logs success after inlining finishes. Failures print an error and exit with a nonzero status.
 
@@ -40,19 +40,17 @@ The library API supports Bare and Node.js:
 require('inline-worker-module')(require.resolve('hello-pear-worker'))
 ```
 
-### `inlineWorker(entry)`
+### `inlineWorker(entry, target = 'workers/main.js')`
 
-`entry` is the absolute path to the source package's worker entrypoint, typically obtained with `require.resolve(...)`. The nearest enclosing `package.json` supplies its metadata and must define a repository URL and version. The repository may be a URL string or an object with a `url` field. The app is the current working directory.
+Copies the resolved `entry` to the app-relative `target`, installs runtime dependencies, and merges imports. The source package needs a repository URL and version. Run via `npm run`.
 
-The helper writes `workers/main.js` with a first comment containing the source repository URL and package version. It replaces a missing or provenance-marked worker and throws if an existing worker lacks a matching source comment. Remove the first comment before customizing the worker to protect your changes. To replace a protected worker intentionally, move it aside before running the command.
-
-It installs the source package's runtime dependencies with npm and saves them to the app's `dependencies`. Relative `file:` dependencies resolve from the source package. It also merges the source package's `imports`, preserving mappings already defined by the app. Only the entrypoint is copied; it must not depend on uncopied relative files.
-
-When the source package has runtime dependencies, run through an npm script so the helper can invoke npm using its supplied environment. Neither the helper nor the worker source package needs to be installed in production.
+Existing workers need a matching source header. Remove it before editing to prevent replacement.
 
 ## Scripts
 
 - `npm test` - run lint and integration tests under Bare and Node.js
+- `npm run test:node` - run tests with `brittle-node`
+- `npm run test:bare` - run tests with `brittle-bare`
 - `npm run lint` - check formatting with prettier and lint with lunte
 - `npm run format` - format the repository with prettier
 

@@ -3,7 +3,7 @@ const path = require('path')
 const process = require('process')
 const { spawnSync } = require('child_process')
 
-module.exports = function inlineWorker(entry) {
+module.exports = function inlineWorker(entry, target = path.join('workers', 'main.js')) {
   entry = path.resolve(entry)
   let dir = path.dirname(entry)
   while (!fs.existsSync(path.join(dir, 'package.json'))) {
@@ -24,7 +24,7 @@ module.exports = function inlineWorker(entry) {
   }
   const header = `// ${url.replace(/^git\+/, '').replace(/\.git$/, '')} v`
   const root = process.cwd()
-  const worker = path.join(root, 'workers', 'main.js')
+  const worker = path.join(root, target)
   try {
     if (!fs.readFileSync(worker, 'utf8').split(/\r?\n/, 1)[0].startsWith(header)) {
       throw new Error(`Refusing to overwrite ${worker}: missing or mismatched source header`)
@@ -34,10 +34,7 @@ module.exports = function inlineWorker(entry) {
   }
 
   const source = `${header}${version}\n\n${fs.readFileSync(entry, 'utf8')}`
-  const packages = Object.entries(dependencies).map(([name, range]) => {
-    if (range.startsWith('file:')) range = `file:${path.resolve(dir, range.slice(5))}`
-    return `${name}@${range}`
-  })
+  const packages = Object.entries(dependencies).map(([name, range]) => `${name}@${range}`)
   if (packages.length) {
     const { npm_node_execpath: node, npm_execpath: npm } = process.env
     if (!node || !npm) throw new Error('Run inline-worker-module through npm run')
@@ -47,7 +44,9 @@ module.exports = function inlineWorker(entry) {
     })
     if (result.error) throw result.error
     if (result.status !== 0) {
-      throw new Error(`npm install failed: ${result.signal || result.status}`)
+      throw new Error(
+        `npm install failed for worker dependencies: ${result.signal || result.status}`
+      )
     }
   }
 

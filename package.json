@@ -1,0 +1,62 @@
+{
+  "name": "inline-worker-module",
+  "version": "1.0.0",
+  "description": "Inline worker entrypoints and their runtime dependencies into an app.",
+  "main": "index.js",
+  "bin": {
+    "inline-worker-module": "bin.js"
+  },
+  "imports": {
+    "fs": {
+      "bare": "bare-fs",
+      "default": "fs"
+    },
+    "path": {
+      "bare": "bare-path",
+      "default": "path"
+    },
+    "child_process": {
+      "bare": "bare-subprocess",
+      "default": "child_process"
+    },
+    "process": {
+      "bare": "bare-process",
+      "default": "process"
+    },
+    "module": {
+      "bare": "bare-module",
+      "default": "module"
+    }
+  },
+  "scripts": {
+    "format": "prettier . --write",
+    "test": "npm run lint && npm run test:node && npm run test:bare",
+    "test:node": "brittle-node test.js",
+    "test:bare": "brittle-bare test.js",
+    "lint": "prettier . --check && lunte"
+  },
+  "type": "commonjs",
+  "dependencies": {
+    "bare-fs": "^4.8.2",
+    "bare-module": "^6.4.0",
+    "bare-path": "^3.0.1",
+    "bare-process": "^4.5.1",
+    "bare-subprocess": "^6.2.1",
+    "paparam": "^1.13.0"
+  },
+  "devDependencies": {
+    "brittle": "^3.19.1",
+    "lunte": "^1.2.0",
+    "prettier": "^3.6.2",
+    "prettier-config-holepunch": "^2.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/holepunchto/inline-worker-module.git"
+  },
+  "author": "Holepunch Inc",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/holepunchto/inline-worker-module/issues"
+  }
+}
